@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
-const signVerification = async (req, res, next) => {
+const signVerification = (req, res, next) => {
   const slackSignature = req.headers["X-Slack-Signature"];
   const requestBody = req.body;
   const timestamp = req.headers["X-Slack-Request-Timestamp"];
@@ -14,18 +14,18 @@ const signVerification = async (req, res, next) => {
 
   if (Math.abs(time - timestamp) > 300) {
     console.log("Ignore this request.");
-    return {
+    return res({
       status: 400,
       body: "Ignore this request.",
-    };
+    });
   }
 
   if (!slackSigningSecret) {
     console.log("Slack signing secret is empty.");
-    return {
+    return res({
       status: 400,
       body: "Slack signing secret is empty.",
-    };
+    });
   }
 
   const sigBasestring = "v0:" + timestamp + ":" + requestBody;
@@ -48,28 +48,28 @@ const signVerification = async (req, res, next) => {
     next();
   } else {
     console.log("Verification failed");
-    return {
+    return res({
       status: 400,
       body: "Verification failed",
-    };
+    });
   }
 };
 
-const route = async function handler(req) {
+const route = function handler(req, res) {
   const { body } = req;
   console.log(body);
 
   if (body.type === "url_verification") {
-    return {
+    return res({
       headers: { "content-type": "application/json" },
       status: 200,
       body: JSON.stringify({ challenge: body.challenge }),
-    };
+    });
   }
 
-  return {
+  res({
     status: 200,
-  };
+  });
 };
 
-exports.handler = arc.http.async(signVerification, route);
+exports.handler = arc.http(signVerification, route);
