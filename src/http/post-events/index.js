@@ -57,16 +57,16 @@ const route = async (req) => {
   console.log(body);
 
   if (body.type === "url_verification") {
-    return res({
+    return {
       headers: { "content-type": "application/json" },
       status: 200,
       body: JSON.stringify({ challenge: body.challenge }),
-    });
+    };
   }
 
-  res({
+  return {
     status: 200,
-  });
+  };
 };
 
 exports.handler = arc.http.async(signVerification, route);
