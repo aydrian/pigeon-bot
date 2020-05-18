@@ -1,0 +1,6 @@
+{
+  "name": "begin-app-post-events",
+  "dependencies": {
+    "@architect/functions": "latest"
+  }
+}
