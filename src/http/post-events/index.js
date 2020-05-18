@@ -30,12 +30,11 @@ const signVerification = (req, res, next) => {
     });
   }
 
-  const sigBasestring = "v0:" + timestamp + ":" + requestBody;
   const mySignature =
     "v0=" +
     crypto
       .createHmac("sha256", slackSigningSecret)
-      .update(sigBasestring, "utf8")
+      .update(`v0:${timestamp}:${requestBody}`)
       .digest("hex");
 
   console.log(`signing secret: ${slackSigningSecret}`);
@@ -43,8 +42,8 @@ const signVerification = (req, res, next) => {
   console.log(`slackSignature: ${slackSignature}`);
   if (
     crypto.timingSafeEqual(
-      Buffer.from(mySignature, "utf8"),
-      Buffer.from(slackSignature, "utf8")
+      Buffer.from(mySignature),
+      Buffer.from(slackSignature)
     )
   ) {
     next();
