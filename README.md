@@ -1,2 +1,0 @@
-# pigeon-bot
-Begin app
