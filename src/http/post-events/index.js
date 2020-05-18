@@ -6,9 +6,10 @@ const qs = require("qs");
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = async (req, res, next) => {
-  const slackSignature = req.headers["x-slack-signature"];
+  const slackSignature = req.headers["X-Slack-Signature"];
   const requestBody = qs.stringify(req.body, { format: "RFC1738" });
-  const timestamp = req.headers["x-slack-request-timestamp"];
+  const timestamp = req.headers["X-Slack-Request-Timestamp"];
+  console.log(timestamp, slackSignature);
 
   const time = Math.floor(new Date().getTime() / 1000);
 
