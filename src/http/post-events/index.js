@@ -2,18 +2,31 @@
 const arc = require("@architect/functions");
 const crypto = require("crypto");
 
+const ticketRegex = // match a linear ticket
+  "(?:" + // anchor this match; require either
+  "\\s+" + // whitespace
+  "|^" + // or beginning of string
+  ")" + // before the ticket match starts
+  "(" + // capture ticket id
+  "[A-Z]" + // first part is 1 uppercase letter
+  "-" + // then a dash
+  "[0-9]+" + // then 1+ numbers
+  ")" + // that's a ticket id
+  "\\b" + // word break after numbers
+  "(?!" + // deal breakers go here
+  "\\." + // no dots after the number, e.g. MO-4.2.26.2
+  ")"; // done with deal breakers
+
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = async (req) => {
   const slackSignature = req.headers["X-Slack-Signature"];
   const requestBody = JSON.stringify(req.body);
   const timestamp = req.headers["X-Slack-Request-Timestamp"];
-  console.log(`requestedBody: ${requestBody}`);
 
   const time = Math.floor(new Date().getTime() / 1000);
 
   if (Math.abs(time - timestamp) > 300) {
-    console.log("Ignore this request.");
     return {
       status: 400,
       body: "Ignore this request.",
@@ -21,7 +34,6 @@ const signVerification = async (req) => {
   }
 
   if (!slackSigningSecret) {
-    console.log("Slack signing secret is empty.");
     return {
       status: 400,
       body: "Slack signing secret is empty.",
@@ -35,16 +47,12 @@ const signVerification = async (req) => {
       .update(`v0:${timestamp}:${requestBody}`)
       .digest("hex");
 
-  console.log(`signing secret: ${slackSigningSecret}`);
-  console.log(`mySignature: ${mySignature}`);
-  console.log(`slackSignature: ${slackSignature}`);
   if (
     !crypto.timingSafeEqual(
       Buffer.from(mySignature),
       Buffer.from(slackSignature)
     )
   ) {
-    console.log("Verification failed");
     return {
       status: 400,
       body: "Verification failed",
@@ -53,15 +61,20 @@ const signVerification = async (req) => {
 };
 
 const route = async (req) => {
-  const { body } = req;
-  console.log(body);
+  console.log(req.body);
+  const { type, event } = req.body;
 
-  if (body.type === "url_verification") {
+  if (type === "url_verification") {
     return {
       headers: { "content-type": "application/json" },
       status: 200,
       body: JSON.stringify({ challenge: body.challenge }),
     };
+  }
+
+  if (type === "event_callback" && event.type === "message") {
+    let ticket = event.text.match(ticketRegex);
+    console.log(`ticket: ${JSON.stringify(ticket)}`);
   }
 
   return {
