@@ -3,6 +3,7 @@ begin-app
 
 @http
 get /
+post /events
 
 @tables
 data
