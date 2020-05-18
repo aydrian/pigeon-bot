@@ -1,15 +1,13 @@
 // learn more about HTTP functions here: https://arc.codes/primitives/http
 const arc = require("@architect/functions");
 const crypto = require("crypto");
-const qs = require("qs");
 
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = (req, res, next) => {
   const slackSignature = req.headers["X-Slack-Signature"];
-  const requestBody = qs.stringify(req.body, { format: "RFC1738" });
+  const requestBody = JSON.stringify(req.body);
   const timestamp = req.headers["X-Slack-Request-Timestamp"];
-  console.log(`req.body: ${req.body}`);
   console.log(`requestedBody: ${requestBody}`);
 
   const time = Math.floor(new Date().getTime() / 1000);
