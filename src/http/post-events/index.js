@@ -14,6 +14,7 @@ const signVerification = async (req, res, next) => {
   const time = Math.floor(new Date().getTime() / 1000);
 
   if (Math.abs(time - timestamp) > 300) {
+    console.log("Ignore this request.");
     return {
       status: 400,
       body: "Ignore this request.",
@@ -21,6 +22,7 @@ const signVerification = async (req, res, next) => {
   }
 
   if (!slackSigningSecret) {
+    console.log("Slack signing secret is empty.");
     return {
       status: 400,
       body: "Slack signing secret is empty.",
@@ -43,6 +45,7 @@ const signVerification = async (req, res, next) => {
   ) {
     next();
   } else {
+    console.log("Verification failed");
     return {
       status: 400,
       body: "Verification failed",
