@@ -9,7 +9,8 @@ const signVerification = (req, res, next) => {
   const slackSignature = req.headers["X-Slack-Signature"];
   const requestBody = qs.stringify(req.body, { format: "RFC1738" });
   const timestamp = req.headers["X-Slack-Request-Timestamp"];
-  console.log(timestamp, slackSignature);
+  console.log(`req.body: ${req.body}`);
+  console.log(`requestedBody: ${requestBody}`);
 
   const time = Math.floor(new Date().getTime() / 1000);
 
