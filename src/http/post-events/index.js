@@ -37,6 +37,8 @@ const signVerification = async (req, res, next) => {
       .update(sigBasestring, "utf8")
       .digest("hex");
 
+  console.log(`mySignature: ${mySignature}`);
+  console.log(`slackSignature: ${slackSignature}`);
   if (
     crypto.timingSafeEqual(
       Buffer.from(mySignature, "utf8"),
