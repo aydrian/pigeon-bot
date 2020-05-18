@@ -37,6 +37,7 @@ const signVerification = async (req, res, next) => {
       .update(sigBasestring, "utf8")
       .digest("hex");
 
+  console.log(`signing secret: ${slackSigningSecret}`);
   console.log(`mySignature: ${mySignature}`);
   console.log(`slackSignature: ${slackSignature}`);
   if (
