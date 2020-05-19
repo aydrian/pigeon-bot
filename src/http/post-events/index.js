@@ -20,9 +20,9 @@ const ticketRegex = // match a linear ticket
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = async (req) => {
-  const slackSignature = req.headers["X-Slack-Signature"];
+  const slackSignature = req.headers["x-slack-signature"];
   const requestBody = JSON.stringify(req.body);
-  const timestamp = req.headers["X-Slack-Request-Timestamp"];
+  const timestamp = req.headers["x-slack-request-timestamp"];
 
   const time = Math.floor(new Date().getTime() / 1000);
 
@@ -65,6 +65,7 @@ const route = async (req) => {
   const { type, event, team_id } = req.body;
 
   if (type === "url_verification") {
+    const { body } = req;
     return {
       headers: { "content-type": "application/json" },
       status: 200,
@@ -73,7 +74,16 @@ const route = async (req) => {
   }
 
   if (type === "event_callback" && event.type === "message") {
-    let ticket = event.text.match(ticketRegex)[1];
+    const { subtype = "" } = event;
+    if (subtype.length > 0) {
+      //don't process message subtypes
+      return {
+        status: 200,
+      };
+    }
+
+    // Check for presence of Linear Ticket
+    const ticket = event.text.match(ticketRegex)[1];
     console.log(`ticket: ${JSON.stringify(ticket)}`);
     if (process.env.LINEAR_API_KEY && ticket) {
       await arc.events.publish({

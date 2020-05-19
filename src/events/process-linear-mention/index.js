@@ -1,8 +1,8 @@
 // learn more about event functions here: https://arc.codes/primitives/events
 const arc = require("@architect/functions");
-//const { CourierClient } = require("@trycourier/courier");
-//const { createApolloFetch } = require("apollo-fetch");
-/*const fetch = createApolloFetch({
+const { CourierClient } = require("@trycourier/courier");
+const { createApolloFetch } = require("apollo-fetch");
+const fetch = createApolloFetch({
   uri: "https://api.linear.app/graphql",
 });
 
@@ -18,34 +18,43 @@ fetch.use(({ request, options }, next) => {
 const courier = CourierClient();
 
 async function processLinearMention(event) {
-  console.log(JSON.stringify(event, null, 2));
   const {
     ticket,
     event: { channel },
   } = event;
+  console.log(`Processing Linear Mention for ticket: ${ticket}.`);
   try {
-    const { data } = fetch({
-      query: `query issue(id: "${ticket}") {
-      id
-      number
-      title
-      team {
-        key
-      }
-    }
-    `,
+    const { data } = await fetch({
+      query: `query IssueById($id: String!) {
+        issue(id: $id) {
+          title
+          description
+          url
+          assignee {
+            name
+          }
+          state {
+            type
+          }
+        }
+      }`,
+      variables: { id: ticket },
     });
-    console.log(data);
-    courier.send({
+    console.log("Data from Linear", data);
+
+    await courier.send({
       eventId: "LINEAR_MENTION",
       recipientId: channel,
       profile: {
         slack: {
           access_token: process.env.SLACK_BOT_ACCESS_TOKEN,
-          channel_id: channel,
+          channel,
         },
       },
-      data,
+      data: {
+        ...data,
+        ticket,
+      },
     });
   } catch (err) {
     console.log(`Error occurred querying Linear ticket ${ticket}`, err.stack);
@@ -54,11 +63,3 @@ async function processLinearMention(event) {
 }
 
 exports.handler = arc.events.subscribe(processLinearMention);
-*/
-
-async function simpleEvent(event) {
-  console.log(JSON.stringify(event, null, 2));
-  return;
-}
-
-exports.handler = arc.events.subscribe(simpleEvent);
