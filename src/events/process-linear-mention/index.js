@@ -1,4 +1,5 @@
 // learn more about event functions here: https://arc.codes/primitives/events
+const arc = require("@architect/functions");
 const { CourierClient } = require("@trycourier/courier");
 const { createApolloFetch } = require("apollo-fetch");
 const fetch = createApolloFetch({
@@ -16,7 +17,7 @@ fetch.use(({ request, options }, next) => {
 
 const courier = CourierClient();
 
-exports.handler = async function subscribe(event) {
+async function processLinearMention(event) {
   console.log(JSON.stringify(event, null, 2));
   const {
     ticket,
@@ -50,4 +51,6 @@ exports.handler = async function subscribe(event) {
     console.log(`Error occurred querying Linear ticket ${ticket}`, err.stack);
   }
   return;
-};
+}
+
+exports.handler = arc.events.subscribe(processLinearMention);
