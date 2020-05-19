@@ -1,8 +1,8 @@
 // learn more about event functions here: https://arc.codes/primitives/events
 const arc = require("@architect/functions");
-const { CourierClient } = require("@trycourier/courier");
-const { createApolloFetch } = require("apollo-fetch");
-const fetch = createApolloFetch({
+//const { CourierClient } = require("@trycourier/courier");
+//const { createApolloFetch } = require("apollo-fetch");
+/*const fetch = createApolloFetch({
   uri: "https://api.linear.app/graphql",
 });
 
@@ -54,3 +54,11 @@ async function processLinearMention(event) {
 }
 
 exports.handler = arc.events.subscribe(processLinearMention);
+*/
+
+async function simpleEvent(event) {
+  console.log(JSON.stringify(event, null, 2));
+  return;
+}
+
+exports.handler = arc.events.subscribe(simpleEvent);
