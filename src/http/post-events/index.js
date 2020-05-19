@@ -21,9 +21,12 @@ const ticketRegex = // match a linear ticket
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = async (req) => {
   console.log("Headers", JSON.stringify(req.headers));
-  const slackSignature = req.headers["x-slack-signature"];
+  const slackSignature =
+    req.headers["X-Slack-Signature"] || req.headers["x-slack-signature"];
   const requestBody = JSON.stringify(req.body);
-  const timestamp = req.headers["x-slack-request-timestamp"];
+  const timestamp =
+    req.headers["X-Slack-Request-Timestamp"] ||
+    req.headers["x-slack-request-timestamp"];
 
   const time = Math.floor(new Date().getTime() / 1000);
 
