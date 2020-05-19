@@ -1,0 +1,8 @@
+{
+  "name": "begin-app-post-events",
+  "dependencies": {
+    "@architect/functions": "latest",
+    "@trycourier/courier": "^1.3.0",
+    "apollo-fetch": "^0.7.0"
+  }
+}
