@@ -62,7 +62,7 @@ const signVerification = async (req) => {
 
 const route = async (req) => {
   console.log(req.body);
-  const { type, event } = req.body;
+  const { type, event, team_id } = req.body;
 
   if (type === "url_verification") {
     return {
@@ -73,8 +73,18 @@ const route = async (req) => {
   }
 
   if (type === "event_callback" && event.type === "message") {
-    let ticket = event.text.match(ticketRegex);
+    let ticket = event.text.match(ticketRegex)[1];
     console.log(`ticket: ${JSON.stringify(ticket)}`);
+    if (process.env.LINEAR_API_KEY && ticket) {
+      await arc.events.publish({
+        name: "process-linear-mention",
+        payload: {
+          ticket,
+          team_id,
+          event,
+        },
+      });
+    }
   }
 
   return {

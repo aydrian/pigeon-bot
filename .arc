@@ -5,6 +5,9 @@ begin-app
 get /
 post /events
 
+@events
+process-linear-mention
+
 @tables
 data
   scopeID *String
