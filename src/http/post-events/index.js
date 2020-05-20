@@ -20,7 +20,6 @@ const ticketRegex = // match a linear ticket
 // fetch this from environment variables
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const signVerification = async (req) => {
-  console.log("Headers", JSON.stringify(req.headers));
   const slackSignature =
     req.headers["X-Slack-Signature"] || req.headers["x-slack-signature"];
   const requestBody = JSON.stringify(req.body);
@@ -81,6 +80,7 @@ const route = async (req) => {
     const { subtype = "" } = event;
     if (subtype.length > 0) {
       //don't process message subtypes
+      console.log(`Skipping ${subtype}`);
       return {
         status: 200,
       };
