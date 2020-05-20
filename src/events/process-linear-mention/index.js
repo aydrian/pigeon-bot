@@ -25,8 +25,12 @@ async function processLinearMention(event) {
     event: { channel },
   } = event;
   console.log(`Processing Linear Mention for ticket: ${ticket}.`);
-  const bot = await slackInstaller.authorize({ teamId: team_id });
-  console.log("Authorize response: ", bot);
+  try {
+    const bot = await slackInstaller.authorize({ teamId: team_id });
+    console.log("Authorize response: ", bot);
+  } catch (err) {
+    console.log("Error retrieving from db: ", err);
+  }
   try {
     const { data } = await fetch({
       query: `query IssueById($id: String!) {
