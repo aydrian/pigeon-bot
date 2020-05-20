@@ -1,5 +1,6 @@
 // learn more about event functions here: https://arc.codes/primitives/events
 const arc = require("@architect/functions");
+const slackInstaller = require("@architect/shared/lib/slack-installer");
 const { CourierClient } = require("@trycourier/courier");
 const { createApolloFetch } = require("apollo-fetch");
 const fetch = createApolloFetch({
@@ -20,9 +21,12 @@ const courier = CourierClient();
 async function processLinearMention(event) {
   const {
     ticket,
+    team_id,
     event: { channel },
   } = event;
   console.log(`Processing Linear Mention for ticket: ${ticket}.`);
+  const bot = await slackInstaller.authorize({ teamId: team_id });
+  console.log("Authorize response: ", bot);
   try {
     const { data } = await fetch({
       query: `query IssueById($id: String!) {

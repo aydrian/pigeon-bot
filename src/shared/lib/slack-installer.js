@@ -98,4 +98,7 @@ module.exports = {
     return await installer.generateInstallUrl(opts);
   },
   handleCallback,
+  authorize: async (source) => {
+    return await installer.authorize(source);
+  },
 };
