@@ -1,20 +1,8 @@
 // learn more about event functions here: https://arc.codes/primitives/events
 const arc = require("@architect/functions");
 const slackInstaller = require("@architect/shared/lib/slack-installer");
+const { getTicketById } = require("@architect/shared/lib/linear-helper");
 const { CourierClient } = require("@trycourier/courier");
-const { createApolloFetch } = require("apollo-fetch");
-const fetch = createApolloFetch({
-  uri: "https://api.linear.app/graphql",
-});
-
-fetch.use(({ request, options }, next) => {
-  if (!options.headers) {
-    options.headers = {}; // Create the headers object if needed.
-  }
-  options.headers["authorization"] = process.env.LINEAR_API_KEY;
-
-  next();
-});
 
 const courier = CourierClient();
 
@@ -32,22 +20,7 @@ async function processLinearMention(event) {
     console.log("Error retrieving from db: ", err);
   }
   try {
-    const { data } = await fetch({
-      query: `query IssueById($id: String!) {
-        issue(id: $id) {
-          title
-          description
-          url
-          assignee {
-            name
-          }
-          state {
-            type
-          }
-        }
-      }`,
-      variables: { id: ticket },
-    });
+    const data = await getTicketById(ticket);
     console.log("Data from Linear", data);
 
     await courier.send({

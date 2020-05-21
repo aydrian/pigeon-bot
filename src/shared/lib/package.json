@@ -13,6 +13,7 @@
     "@architect/functions": "^3.10.1",
     "@begin/data": "^1.2.2",
     "@slack/oauth": "^1.0.0",
-    "@slack/web-api": "^5.8.1"
+    "@slack/web-api": "^5.8.1",
+    "apollo-fetch": "^0.7.0"
   }
 }
