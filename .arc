@@ -10,5 +10,7 @@ post /events  # accepts events from Slack
 process-linear-mention
 
 @tables
-bots
-  teamID *String
+data
+  scopeID *String
+  dataID **String
+  ttl TTL

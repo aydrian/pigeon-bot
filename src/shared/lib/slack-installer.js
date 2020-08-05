@@ -1,8 +1,9 @@
-const { InstallProvider } = require("@slack/oauth");
+const { InstallProvider, LogLevel } = require("@slack/oauth");
 const { WebClient } = require("@slack/web-api");
 const arc = require("@architect/functions");
 const data = require("@begin/data");
 
+// https://slack.dev/node-slack-sdk/oauth#storing-installations-in-a-database
 const storeInstallation = async (installation) => {
   try {
     await data.set({
@@ -33,6 +34,7 @@ const installer = new InstallProvider({
     storeInstallation,
     fetchInstallation,
   },
+  logLevel: LogLevel.DEBUG,
 });
 
 // Gets the bot_id using the `auth.test` method.
