@@ -1,6 +1,5 @@
 // learn more about event functions here: https://arc.codes/primitives/events
 const arc = require("@architect/functions");
-const slackInstaller = require("@architect/shared/lib/slack-installer");
 const { getTicketById } = require("@architect/shared/lib/linear-helper");
 const { CourierClient } = require("@trycourier/courier");
 
@@ -11,34 +10,30 @@ async function processLinearMention(event) {
     ticket,
     team_id,
     event: { channel },
+    bot
   } = event;
-  console.log(`Processing Linear Mention for ticket: ${ticket}.`);
-  try {
-    const bot = await slackInstaller.authorize({ teamId: team_id });
-    console.log("Authorize response: ", bot);
-  } catch (err) {
-    console.log("Error retrieving from db: ", err);
-  }
+  console.debug(`Processing Linear Mention for ticket: ${ticket}.`);
+
   try {
     const data = await getTicketById(ticket);
-    console.log("Data from Linear", data);
+    console.debug("Data from Linear", data);
 
     await courier.send({
       eventId: "LINEAR_MENTION",
       recipientId: channel,
       profile: {
         slack: {
-          access_token: process.env.SLACK_BOT_ACCESS_TOKEN,
-          channel,
-        },
+          access_token: bot.botToken,
+          channel
+        }
       },
       data: {
         ...data,
-        ticket,
-      },
+        ticket
+      }
     });
   } catch (err) {
-    console.log(`Error occurred querying Linear ticket ${ticket}`, err.stack);
+    console.error(`Error occurred querying Linear ticket ${ticket}`, err.stack);
   }
   return;
 }

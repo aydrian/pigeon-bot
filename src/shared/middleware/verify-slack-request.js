@@ -17,7 +17,7 @@ const signVerification = async (req) => {
     return {
       status: 400,
       type: "text/plain",
-      body: "Ignore this request.",
+      body: "Ignore this request."
     };
   }
 
@@ -25,7 +25,7 @@ const signVerification = async (req) => {
     return {
       status: 400,
       type: "text/plain",
-      body: "Slack signing secret is empty.",
+      body: "Slack signing secret is empty."
     };
   }
 
@@ -42,13 +42,14 @@ const signVerification = async (req) => {
       Buffer.from(slackSignature)
     )
   ) {
-    console.log("timestamp: ", timestamp);
-    console.log("mySignature: ", mySignature);
-    console.log("slackSignature: ", slackSignature);
+    console.debug("Invalid Request:", JSON.stringify(req.body));
+    console.debug("timestamp: ", timestamp);
+    console.debug("mySignature: ", mySignature);
+    console.debug("slackSignature: ", slackSignature);
     return {
       status: 400,
       body: "Verification failed",
-      type: "text/plain",
+      type: "text/plain"
     };
   }
 };

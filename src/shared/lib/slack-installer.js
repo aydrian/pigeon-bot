@@ -9,10 +9,10 @@ const storeInstallation = async (installation) => {
     await data.set({
       table: "bots",
       teamId: installation.team.id,
-      ...installation,
+      ...installation
     });
   } catch (err) {
-    console.log("Error storing installation", err);
+    console.error("Error storing installation", err);
     throw err;
   }
   return;
@@ -21,9 +21,9 @@ const storeInstallation = async (installation) => {
 const fetchInstallation = async (installQuery) => {
   const result = await data.get({
     table: "bots",
-    teamId: installQuery.teamId,
+    teamId: installQuery.teamId
   });
-  return result;
+  return result.length > 0 ? result[0] : {};
 };
 
 const installer = new InstallProvider({
@@ -32,9 +32,9 @@ const installer = new InstallProvider({
   stateSecret: "pigeon-bot",
   installationStore: {
     storeInstallation,
-    fetchInstallation,
+    fetchInstallation
   },
-  logLevel: LogLevel.DEBUG,
+  logLevel: LogLevel.DEBUG
 });
 
 // Gets the bot_id using the `auth.test` method.
@@ -56,7 +56,7 @@ const handleCallback = async (req) => {
     code,
     client_id: process.env.SLACK_CLIENT_ID,
     client_secret: process.env.SLACK_CLIENT_SECRET,
-    redirect_uri: process.env.SLACK_INSTALL_REDIRECT,
+    redirect_uri: process.env.SLACK_INSTALL_REDIRECT
   });
 
   //get botId
@@ -72,25 +72,25 @@ const handleCallback = async (req) => {
         resp.authed_user.scope !== undefined
           ? resp.authed_user.scope.split(",")
           : undefined,
-      id: resp.authed_user.id,
+      id: resp.authed_user.id
     },
     bot: {
       scopes: resp.scope.split(","),
       token: resp.access_token,
       userId: resp.bot_user_id,
-      id: botId,
+      id: botId
     },
-    tokenType: resp.token_type,
+    tokenType: resp.token_type
   };
 
   if (resp.enterprise !== null) {
     installation.enterprise = {
       id: resp.enterprise.id,
-      name: resp.enterprise.name,
+      name: resp.enterprise.name
     };
   }
 
-  console.log("Installation: ", installation);
+  console.debug("Installation: ", installation);
   await storeInstallation(installation);
   return { location: "/" };
 };
@@ -102,5 +102,5 @@ module.exports = {
   handleCallback,
   authorize: async (source) => {
     return await installer.authorize(source);
-  },
+  }
 };
